@@ -1,0 +1,13 @@
+type: plugin4
+name: DialAccel
+version: 1.0.0
+displayName: Dial Accel
+description: Defilement accelere a la molette, plus vous tournez vite plus ca defile loin
+author: yokoinc
+minimumLoupedeckVersion: 6.1
+
+pluginType: remote
+pluginRuntime: nodejs22
+entryPoint: index.mjs
+
+pluginCapabilities:
