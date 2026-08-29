@@ -17,23 +17,9 @@ flèches.
 
 ## Installation
 
-Quatre étapes, et aucun outil de développement.
+Trois étapes, et aucun outil de développement.
 
-### 1. Contourner un défaut de nommage de Logitech — une fois par machine
-
-Le Plugin Service décompresse son moteur d'exécution dans un dossier nommé
-`node22`, puis le cherche sous `nodejs22`. Tant que les deux noms n'existent pas,
-il refuse de charger ce type de plugin. Colle ceci dans PowerShell :
-
-```
-$h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
-New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
-```
-
-S'il répond que la cible n'existe pas, ouvre Logi Options+ et laisse-le démarrer
-complètement — il télécharge le moteur tout seul — puis relance la commande.
-
-### 2. Déposer le plugin
+### 1. Déposer le plugin
 
 Télécharge [`DialAccel.lplug4`](DialAccel.lplug4). C'est une simple archive zip :
 extrais son **contenu** — pas le dossier — dans
@@ -45,7 +31,7 @@ extrais son **contenu** — pas le dossier — dans
 Tu dois obtenir `index.mjs`, `metadata\`, `node_modules\` et les deux dossiers
 d'icônes directement dans `DialAccel`.
 
-### 3. Redémarrer le Plugin Service
+### 2. Redémarrer le Plugin Service
 
 Il ne relit jamais un plugin à chaud, cette étape est donc obligatoire :
 
@@ -54,7 +40,7 @@ Stop-Process -Name LogiPluginService,LogiPluginServiceExt -Force
 Start-Process 'C:\Program Files\Logi\LogiPluginService\LogiPluginService.exe'
 ```
 
-### 4. Assigner l'action dans Options+
+### 3. Assigner l'action dans Options+
 
 Ouvre l'écran de personnalisation du périphérique. L'action apparaît sous
 **Actions Dial Accel**, sous le nom **Défilement OHIF**.
@@ -68,7 +54,7 @@ Deux choses qui font perdre du temps ici :
 - **Préfère la roulette, en haut à droite.** Le gros cadran central impose une
   incrustation à l'écran quoi que tu poses dessus. La roulette, non.
 
-C'est tout — tourne la roulette et ça défile.
+Tourne la roulette et ça défile.
 
 ---
 
@@ -101,13 +87,29 @@ Le journal du plugin est la seule source de vérité :
 
 | Ce que dit le journal | Ce que ça veut dire |
 |---|---|
+| `Starting remote plugin` puis `Init connection confirmed` | Chargé et fonctionnel. |
+| `Plugin runtime 'NodeJs22' not yet installed` | Dossier du moteur mal nommé — voir ci-dessous. |
 | `Unknown plugin runtime type 'nodejs'` | Le manifeste dit `nodejs`. Il doit dire `nodejs22`. |
-| `Plugin runtime 'NodeJs22' not yet installed` | La jonction de l'étape 1 manque. |
-| `Starting remote plugin` puis `Init connection confirmed` | Le plugin est chargé et fonctionne. |
-| **Rien du tout** quand tu tournes la molette | L'action est assignée dans un profil qui n'est pas l'actif. Voir l'étape 4. |
+| **Rien du tout** quand tu tournes la molette | L'action est assignée dans un profil qui n'est pas l'actif. Voir l'étape 3. |
 
-Le journal ne gère que l'ASCII — les accents y ressortent en charabia, c'est
-normal. Les libellés affichés dans Options+, eux, gardent leurs accents, et
+### `Plugin runtime 'NodeJs22' not yet installed`
+
+Le Plugin Service décompresse son moteur d'exécution dans un dossier nommé
+`node22`, puis le cherche sous `nodejs22`. Lui donner les deux noms règle le
+problème, une fois pour toutes :
+
+```
+$h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
+New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
+```
+
+S'il répond que la cible n'existe pas, ouvre Logi Options+ et laisse-le démarrer
+complètement — il télécharge le moteur tout seul — puis relance la commande.
+
+### À propos des accents
+
+Le journal ne gère que l'ASCII, les accents y ressortent donc en charabia. C'est
+normal. Les libellés affichés dans Options+, eux, gardent leurs accents et
 doivent les garder : la recherche d'actions y est sensible.
 
 ---
@@ -119,7 +121,7 @@ npm install
 npm run build:pack
 ```
 
-Ça produit `dist/` et `DialAccel.lplug4`. L'installation suit les étapes 2 et 3
+Ça produit `dist/` et `DialAccel.lplug4`. L'installation suit les étapes 1 et 2
 ci-dessus.
 
 `npm run link` existe aussi, mais ne fait qu'un lien symbolique de `dist/` vers

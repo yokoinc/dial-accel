@@ -16,23 +16,9 @@ Logitech counterpart of the Stream Deck plugin
 
 ## Install
 
-Four steps, and no development tools of any kind.
+Three steps, and no development tools of any kind.
 
-### 1. Work around a Logitech naming bug — once per machine
-
-The Plugin Service unpacks its runtime into a folder named `node22`, then looks
-for it under `nodejs22`. Until both names exist it refuses to load this kind of
-plugin. Paste this into PowerShell:
-
-```
-$h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
-New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
-```
-
-If it answers that the target does not exist, open Logi Options+ and let it
-finish starting — it fetches the runtime by itself — then run the command again.
-
-### 2. Drop the plugin into place
+### 1. Drop the plugin into place
 
 Download [`DialAccel.lplug4`](DialAccel.lplug4). It is a plain zip: extract its
 **contents** — not the folder — into
@@ -44,7 +30,7 @@ Download [`DialAccel.lplug4`](DialAccel.lplug4). It is a plain zip: extract its
 You should end up with `index.mjs`, `metadata\`, `node_modules\` and the two
 icon folders directly inside `DialAccel`.
 
-### 3. Restart the Plugin Service
+### 2. Restart the Plugin Service
 
 It never reloads a plugin while running, so this is mandatory:
 
@@ -53,7 +39,7 @@ Stop-Process -Name LogiPluginService,LogiPluginServiceExt -Force
 Start-Process 'C:\Program Files\Logi\LogiPluginService\LogiPluginService.exe'
 ```
 
-### 4. Assign the action in Options+
+### 3. Assign the action in Options+
 
 Open the device customisation screen. The action appears under **Actions Dial
 Accel**, named **Défilement OHIF**.
@@ -67,7 +53,7 @@ Two things that trip people up here:
 - **Prefer the roller, top right.** The large central dial forces an on-screen
   overlay whatever you put on it. The roller does not.
 
-Done — turn the roller and the view scrolls.
+Turn the roller and the view scrolls.
 
 ---
 
@@ -99,13 +85,28 @@ The plugin log is the only source of truth:
 
 | What the log says | What it means |
 |---|---|
+| `Starting remote plugin` then `Init connection confirmed` | Loaded and healthy. |
+| `Plugin runtime 'NodeJs22' not yet installed` | Runtime folder misnamed — see below. |
 | `Unknown plugin runtime type 'nodejs'` | The manifest says `nodejs`. It must say `nodejs22`. |
-| `Plugin runtime 'NodeJs22' not yet installed` | The junction from step 1 is missing. |
-| `Starting remote plugin` then `Init connection confirmed` | The plugin is loaded and healthy. |
-| **Nothing at all** while you turn the dial | The action is assigned in a profile that is not the active one. See step 4. |
+| **Nothing at all** while you turn the dial | The action is assigned in a profile that is not the active one. See step 3. |
 
-The log only handles ASCII — accented characters come out as mojibake, which is
-expected. The labels shown inside Options+ keep their accents, and must: its
+### `Plugin runtime 'NodeJs22' not yet installed`
+
+The Plugin Service unpacks its runtime into a folder named `node22`, then looks
+for it under `nodejs22`. Giving it both names fixes it, once per machine:
+
+```
+$h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
+New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
+```
+
+If it answers that the target does not exist, open Logi Options+ and let it
+finish starting — it fetches the runtime by itself — then run the command again.
+
+### A note on accents
+
+The log only handles ASCII, so accented characters come out as mojibake. That is
+expected. The labels shown inside Options+ keep their accents and must: its
 action search is accent-sensitive.
 
 ---
@@ -117,7 +118,7 @@ npm install
 npm run build:pack
 ```
 
-This produces `dist/` and `DialAccel.lplug4`. Install as in steps 2 and 3 above.
+This produces `dist/` and `DialAccel.lplug4`. Install as in steps 1 and 2 above.
 
 `npm run link` also exists, but only symlinks `dist/` into the plugins folder.
 It is convenient while developing and wrong for real use: deleting the source
