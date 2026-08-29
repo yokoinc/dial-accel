@@ -16,21 +16,21 @@ Logitech counterpart of the Stream Deck plugin
 
 ## Install
 
-Four steps. None of them needs Node or a build toolchain.
+Four steps, and no development tools of any kind.
 
-### 1. Create the Node host junction — once per machine
+### 1. Work around a Logitech naming bug — once per machine
 
-The Plugin Service downloads its Node host into a folder called `node22`, but
-looks for it under `nodejs22`. Until that junction exists, no JS plugin can load.
-In PowerShell:
+The Plugin Service unpacks its runtime into a folder named `node22`, then looks
+for it under `nodejs22`. Until both names exist it refuses to load this kind of
+plugin. Paste this into PowerShell:
 
 ```
 $h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
 New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
 ```
 
-If `node22` does not exist yet, open Logi Options+ once and let it finish
-starting — the service downloads the host on its own, then run the command.
+If it answers that the target does not exist, open Logi Options+ and let it
+finish starting — it fetches the runtime by itself — then run the command again.
 
 ### 2. Drop the plugin into place
 

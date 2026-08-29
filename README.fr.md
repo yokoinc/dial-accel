@@ -17,21 +17,21 @@ flèches.
 
 ## Installation
 
-Quatre étapes. Aucune ne demande Node ni de compiler quoi que ce soit.
+Quatre étapes, et aucun outil de développement.
 
-### 1. Créer la jonction de l'hôte Node — une fois par machine
+### 1. Contourner un défaut de nommage de Logitech — une fois par machine
 
-Le Plugin Service télécharge son hôte Node dans un dossier nommé `node22`, mais
-le cherche sous `nodejs22`. Tant que cette jonction n'existe pas, aucun plugin JS
-ne peut se charger. Dans PowerShell :
+Le Plugin Service décompresse son moteur d'exécution dans un dossier nommé
+`node22`, puis le cherche sous `nodejs22`. Tant que les deux noms n'existent pas,
+il refuse de charger ce type de plugin. Colle ceci dans PowerShell :
 
 ```
 $h = "$env:LOCALAPPDATA\Logi\LogiPluginService\PluginHosts"
 New-Item -ItemType Junction -Path "$h\nodejs22" -Target "$h\node22"
 ```
 
-Si `node22` n'existe pas encore, ouvre Logi Options+ et laisse-le démarrer
-complètement — le service télécharge l'hôte tout seul — puis relance la commande.
+S'il répond que la cible n'existe pas, ouvre Logi Options+ et laisse-le démarrer
+complètement — il télécharge le moteur tout seul — puis relance la commande.
 
 ### 2. Déposer le plugin
 
