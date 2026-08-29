@@ -28,7 +28,16 @@ Les frappes partent par `SendInput` (Win32), appelé directement depuis Node via
 [koffi](https://koffi.dev/). Aucun processus fils, aucun script : un appel
 système par événement.
 
-## Installation
+## Installer le paquet tout prêt
+
+Télécharge [`DialAccel.lplug4`](DialAccel.lplug4) et double-clique dessus :
+Options+ le récupère et l'installe. Si rien ne se passe, le fichier est une
+simple archive zip — extrais son contenu dans
+`%LOCALAPPDATA%\Logi\LogiPluginService\Plugins\DialAccel` et redémarre le service.
+
+La jonction `nodejs22` décrite plus bas reste indispensable dans les deux cas.
+
+## Construire depuis les sources
 
 ```
 npm install

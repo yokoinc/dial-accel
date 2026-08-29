@@ -1,5 +1,2 @@
 node_modules/
 dist/
-
-# Paquet installable, reconstruit par `npm run build:pack`
-*.lplug4

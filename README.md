@@ -28,7 +28,16 @@ Keystrokes are delivered through Win32 `SendInput`, called straight from Node
 via [koffi](https://koffi.dev/). No child process, no script — one syscall per
 event.
 
-## Installation
+## Install the packaged plugin
+
+Download [`DialAccel.lplug4`](DialAccel.lplug4) and double-click it: Options+
+picks it up and installs it. If nothing happens, the file is a plain zip —
+extract its contents into `%LOCALAPPDATA%\Logi\LogiPluginService\Plugins\DialAccel`
+and restart the service.
+
+The `nodejs22` junction described below is required either way.
+
+## Build from source
 
 ```
 npm install
